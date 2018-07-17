@@ -1,0 +1,44 @@
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/objdetect/objdetect.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include "opencv2/opencv.hpp"
+#include "opencv2/opencv_lib.hpp"
+
+
+
+using namespace std;
+using namespace cv;
+
+int main()
+{
+	Mat img = imread("lena.jpg");
+	if (img.empty())
+	{
+		cout << "Not found";
+		return -1;
+	}
+
+	string cascadeName = "haarcascades/haarcascade_frontalface_alt.xml";
+	CascadeClassifier cascade;
+	if (!cascade.load(cascadeName))
+	{
+		cout << "Not load";
+		return -1;
+	}
+
+	vector<Rect> faces;// マルチスケール（顔）探索
+	cascade.detectMultiScale(img, faces,1.1, 2,0,Size(30, 30)); 
+	// 画像，出力矩形，縮小スケール，最低矩形数，（フラグ），最小矩形
+
+	for (int i = 0; i < faces.size(); i++)
+	{
+		rectangle(img, Point(faces[i].x, faces[i].y), Point(faces[i].x + faces[i].width, faces[i].y + faces[i].height), Scalar(0, 200, 0), 3, CV_AA);
+
+	}
+	namedWindow("result", CV_WINDOW_AUTOSIZE | CV_WINDOW_FREERATIO);
+	imshow("result", img);
+	waitKey(0);
+
+	return 0;
+}
